@@ -1,4 +1,4 @@
-                                          Министерство образования Республики Беларусь
+﻿                                          Министерство образования Республики Беларусь
 
                                                        Учреждение образования
 
@@ -18,7 +18,7 @@
 
 Ст. гр. АС-47
 
-Вашкевич В.О.
+Володько А.C.
 
 Проверил:
 
@@ -35,27 +35,90 @@
 ### Код программы:
 ```c++
 #include "stdafx.h"
-#include "notlinear.h"
 #include <iostream>
 #include <math.h>
 
 using namespace std;
+const double ut = 7.4321; 
 
-void notlinear::ShowResults() {
-	cout << "Нелинейная модель " << endl << endl;
-	cout.width(8);
-	cout << " y" << " |  " << "u" << "  | " << "t" << endl << endl;
-	y[0] = 0;
-	y[1] = 0;
-	for (int t = 1; t <= 10; t++) {
-		if (t > 1){
-		y[t] = 0.9*y[t-1] - 0.001*y[t - 2] * y[t - 2] + u + sin(u);
+class Model
+{
+private:
+	double array_y[31] = {};
+public:
+	Model() :array_y() {};
+	virtual void ShowResult() = 0;
+	virtual void SearchAnswer() = 0;
+	
+
+};
+
+
+class LinearModel :public Model
+{
+private:
+	double array_y[31];
+public:
+	LinearModel() :array_y() {}
+	void SearchAnswer()
+	{
+		for (int i = 1; i <= 30; i++)
+		{
+			array_y[i] = 0.988*array_y[i - 1] + 0.232*ut;
 		}
 	}
-	for (int t = 1; t <= 10; t++) {
-		cout.width(8);
-		cout << y[t] << " | " << u << " | " << t << endl;
+	void ShowResult()
+	{
+		cout << "Решение лийнейной модели: " << endl;
+		for (int i = 1; i <= 30; i++)
+		{
+			cout << "t=" << i << " y=" << array_y[i] << endl;
+		}
 	}
+
+};
+
+class NonlinearModel : public Model
+{
+private:
+	double array_y[31] = {};
+public:
+	NonlinearModel() :array_y() {}
+	void SearchAnswer()
+	{
+		for (int i = 1; i <= 30; i++)
+		{
+			if (i > 1)
+			{
+				array_y[i] = 0.9*array_y[i - 1] - 0.001*array_y[i - 2] * array_y[i - 2] + ut + sin(ut);
+			}
+		}
+	}
+	
+	void ShowResult()
+	{
+		cout << "Решение нелийнейной модели: " << endl;
+		for (int i = 1; i <= 30; i++)
+		{
+			cout << "t=" << i << " y=" << array_y[i] << endl;
+		}
+	}
+};
+
+int main()
+{
+	setlocale(0, "");
+	LinearModel *ObjectLinearModel = new LinearModel;
+	NonlinearModel *ObjectNonlinearModel = new NonlinearModel;
+	ObjectLinearModel->SearchAnswer();
+	ObjectLinearModel->ShowResult();
+	ObjectNonlinearModel->SearchAnswer();
+	ObjectNonlinearModel->ShowResult();
+	system("pause");
+	return 0;
 }
+
+
+
 ```
 Вывод: Реализовал программу, моделирующую объект управления на С++. Построил графики моделей температуры объекта. Температура обьекта зависит от входной температуры линейно и нелинейно в зависимости от объекта.
